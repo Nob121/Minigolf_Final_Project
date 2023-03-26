@@ -21,6 +21,8 @@ public class BallController : MonoBehaviour
     //[SerializeField] private float minHoleTime;
     private Vector3 spawnPoint;
     //private MenuManager menuManager;
+    [SerializeField] TextMeshProUGUI resultLabel;
+    [SerializeField] ResultPopUp resultPopUp;
 
     private void Awake()
     {
@@ -114,7 +116,8 @@ public class BallController : MonoBehaviour
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             StartCoroutine(DestroyAfterSeconds(2f));
-            Debug.Log("Congratulations " + player + ", You finished the level in " + hits + " hits");
+            resultLabel.text = "Congratulations " + player + ", You got " + Result();
+            resultPopUp.Open();
             
         }
     }
@@ -123,5 +126,21 @@ public class BallController : MonoBehaviour
     {
         yield return new WaitForSeconds(seconds);
         Destroy(gameObject);
+    }
+
+    private string Result()
+    {
+        if(hits == 1)
+        {
+            return "Hole in One";
+        }
+        else if(hits == 2)
+        {
+            return "Par";
+        }
+        else
+        {
+            return "Par +" + (hits - 2).ToString();
+        }
     }
 }
