@@ -23,6 +23,7 @@ public class BallController : MonoBehaviour
     //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] ResultPopUp resultPopUp;
+    [SerializeField] private Camera camera;
 
     private void Awake()
     {
@@ -112,20 +113,25 @@ public class BallController : MonoBehaviour
         if (collision.collider.tag == "Hole")
         {
             string player = PlayerPrefs.GetString("PlayerName", "Player1");
-            if (line) { Destroy(line); }
+            //if (line) { Destroy(line); }
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             StartCoroutine(DestroyAfterSeconds(2f));
             resultLabel.text = "Congratulations " + player + ", You got " + Result();
             resultPopUp.Open();
+            hits = 0;
             
         }
     }
 
     private IEnumerator DestroyAfterSeconds(float seconds)
     {
+        line.enabled = false;
         yield return new WaitForSeconds(seconds);
-        Destroy(gameObject);
+        transform.position = new Vector3(-10f,2.2f,3.08f);
+        camera.transform.position = new Vector3(-11.28f,2.3f,-1);
+        camera.transform.rotation = Quaternion.Euler(35, 50, 0);
+        line.enabled = true;
     }
 
     private string Result()

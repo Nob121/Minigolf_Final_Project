@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResultPopUp : MonoBehaviour
 {
     // Start is called before the first frame update
+   // [SerializeField] private BallController ball;
     public void Open()
     {
         this.gameObject.SetActive(true);
@@ -12,5 +13,6 @@ public class ResultPopUp : MonoBehaviour
     public void Close()
     {
         this.gameObject.SetActive(false);
+       
     }
 }
