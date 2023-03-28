@@ -23,7 +23,10 @@ public class BallController : MonoBehaviour
     //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] ResultPopUp resultPopUp;
-    [SerializeField] private Camera camera;
+    //[SerializeField] private Camera camera;
+    [SerializeField] private Transform level2pos;
+    [SerializeField] private Transform level3pos;
+    private float level = 1;
 
     private void Awake()
     {
@@ -120,6 +123,11 @@ public class BallController : MonoBehaviour
             resultLabel.text = "Congratulations " + player + ", You got " + Result();
             resultPopUp.Open();
             hits = 0;
+            if(level == 1)
+            {
+                level = 2;
+            }
+            Debug.Log(level);
             
         }
     }
@@ -128,9 +136,15 @@ public class BallController : MonoBehaviour
     {
         line.enabled = false;
         yield return new WaitForSeconds(seconds);
-        transform.position = new Vector3(-10f,2.2f,3.08f);
-        camera.transform.position = new Vector3(-11.28f,2.3f,-1);
-        camera.transform.rotation = Quaternion.Euler(35, 50, 0);
+        if (level != 2)
+        {
+            transform.position = level3pos.position;
+        }
+        else
+        {
+            transform.position = level2pos.position;
+            level++;
+        }
         line.enabled = true;
     }
 
