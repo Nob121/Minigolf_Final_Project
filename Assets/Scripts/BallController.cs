@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +27,7 @@ public class BallController : MonoBehaviour
     //[SerializeField] private Camera camera;
     [SerializeField] private Transform level2pos;
     [SerializeField] private Transform level3pos;
-    private float level = 1;
+    private int level = 1;
 
     private void Awake()
     {
@@ -120,13 +121,10 @@ public class BallController : MonoBehaviour
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             StartCoroutine(DestroyAfterSeconds(2f));
-            resultLabel.text = "Congratulations " + player + ", You got " + Result();
+            Debug.Log("Hits: " + hits);
+            resultLabel.text = "Congratulations " + player + ", You got " + Result(hits);
             resultPopUp.Open();
-            hits = 0;
-            if(level == 1)
-            {
-                level = 2;
-            }
+            //hits = 0;
             Debug.Log(level);
             
         }
@@ -148,19 +146,22 @@ public class BallController : MonoBehaviour
         line.enabled = true;
     }
 
-    private string Result()
+    private string Result(int hit)
     {
-        if(hits == 1)
+        string result;
+        if(hit == 1)
         {
-            return "Hole in One";
+            result = "Hole in One";
         }
-        else if(hits == 2)
+        else if(hit == 2)
         {
-            return "Par";
+            result = "Par";
         }
         else
         {
-            return "Par +" + (hits - 2).ToString();
+            result = "Par +" + (hits - 2).ToString();
         }
+        //hits = 0;
+        return result;
     }
 }
