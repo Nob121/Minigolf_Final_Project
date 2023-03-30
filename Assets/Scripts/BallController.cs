@@ -126,6 +126,9 @@ public class BallController : MonoBehaviour
             resultPopUp.Open();
             //hits = 0;
             Debug.Log(level);
+            if(level == 1) {
+                level = 2;
+            }
             
         }
     }
@@ -134,14 +137,15 @@ public class BallController : MonoBehaviour
     {
         line.enabled = false;
         yield return new WaitForSeconds(seconds);
-        if (level != 2)
+        if(level != 2)
         {
             transform.position = level3pos.position;
+            hits = 0;
         }
-        else
-        {
+        else { 
             transform.position = level2pos.position;
-            level++;
+            level = 3;
+            hits = 0;
         }
         line.enabled = true;
     }
@@ -159,7 +163,7 @@ public class BallController : MonoBehaviour
         }
         else
         {
-            result = "Par +" + (hits - 2).ToString();
+            result =  "+" + (hits - 2).ToString();
         }
         //hits = 0;
         return result;
