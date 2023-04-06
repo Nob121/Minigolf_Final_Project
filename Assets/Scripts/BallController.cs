@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
@@ -24,16 +26,18 @@ public class BallController : MonoBehaviour
     //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] ResultPopUp resultPopUp;
-    //[SerializeField] private Camera camera;
+    [SerializeField] private BasePopUp basePopUp;
     [SerializeField] private Transform level2pos;
     [SerializeField] private Transform level3pos;
     private int level = 1;
+    private int[] scoreArray;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.maxAngularVelocity = 1000;
         line = GetComponent<LineRenderer>();
+        scoreArray = new int[0];
         
     }
 
@@ -110,9 +114,11 @@ public class BallController : MonoBehaviour
     {
         if(collision.collider.tag == "OutOfBounds")
         {
-            transform.position = spawnPoint;
+            //basePopUp.Open();
+            //transform.position = spawnPoint;
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            StartCoroutine(Respawn());
         }
         if (collision.collider.tag == "Hole")
         {
@@ -120,17 +126,30 @@ public class BallController : MonoBehaviour
             //if (line) { Destroy(line); }
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            Array.Resize(ref scoreArray, scoreArray.Length + 1);
+            scoreArray[scoreArray.Length - 1] = hits;
+           // scoreArray.Append(hits);
+           // Debug.Log(scoreArray[0]);
             StartCoroutine(DestroyAfterSeconds(2f));
             StartCoroutine(DisableCollisionForSeconds(collision.collider, 2f));
-            Debug.Log("Hits: " + hits);
+           // Debug.Log("Hits: " + hits);
             resultLabel.text = "Congratulations " + player + ", You got " + Result(hits);
             resultPopUp.Open();
             hits = 0;
-            Debug.Log(level);
+           // Debug.Log(level);
             level++;
             
         }
     }
+    IEnumerator Respawn()
+    {
+        basePopUp.Open();
+        yield return new WaitForSeconds(2f);
+        transform.position = spawnPoint;
+        basePopUp.Close();
+
+    }
+    
     IEnumerator DisableCollisionForSeconds(Collider collider, float duration)
     {
         collider.enabled = false;
@@ -152,6 +171,7 @@ public class BallController : MonoBehaviour
         }
         line.enabled = true;
         resultPopUp.Close();
+        hitsCount.text = hits.ToString();
     }
 
     private string Result(int hit)
