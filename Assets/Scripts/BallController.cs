@@ -121,33 +121,37 @@ public class BallController : MonoBehaviour
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             StartCoroutine(DestroyAfterSeconds(2f));
+            StartCoroutine(DisableCollisionForSeconds(collision.collider, 2f));
             Debug.Log("Hits: " + hits);
             resultLabel.text = "Congratulations " + player + ", You got " + Result(hits);
             resultPopUp.Open();
-            //hits = 0;
+            hits = 0;
             Debug.Log(level);
-            if(level == 1) {
-                level = 2;
-            }
+            level++;
             
         }
+    }
+    IEnumerator DisableCollisionForSeconds(Collider collider, float duration)
+    {
+        collider.enabled = false;
+        yield return new WaitForSeconds(duration);
+        collider.enabled = true;
     }
 
     private IEnumerator DestroyAfterSeconds(float seconds)
     {
         line.enabled = false;
         yield return new WaitForSeconds(seconds);
-        if(level != 2)
-        {
-            transform.position = level3pos.position;
+        if(level == 2)
+        { 
+            transform.position = level2pos.position;
             hits = 0;
         }
         else { 
-            transform.position = level2pos.position;
-            level = 3;
-            hits = 0;
+            transform.position = level3pos.position;
         }
         line.enabled = true;
+        resultPopUp.Close();
     }
 
     private string Result(int hit)
@@ -165,7 +169,6 @@ public class BallController : MonoBehaviour
         {
             result =  "+" + (hits - 2).ToString();
         }
-        //hits = 0;
         return result;
     }
 }
