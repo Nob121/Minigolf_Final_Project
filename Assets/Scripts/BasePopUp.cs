@@ -5,6 +5,7 @@ using UnityEngine;
 public class BasePopUp : MonoBehaviour
 {
     // Start is called before the first frame update
+
     public void Open()
     {
         this.gameObject.SetActive(true);

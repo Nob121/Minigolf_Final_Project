@@ -25,7 +25,10 @@ public class BallController : MonoBehaviour
     private Vector3 spawnPoint;
     //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
-    [SerializeField] ResultPopUp resultPopUp;
+    [SerializeField] BasePopUp resultPopUp;
+    [SerializeField] OptionsPopUp optionsPopUp;
+    [SerializeField] BasePopUp hitPopup;
+    [SerializeField] BasePopUp parPopUp;
     [SerializeField] private BasePopUp basePopUp;
     [SerializeField] private Transform level2pos;
     [SerializeField] private Transform level3pos;
@@ -61,6 +64,12 @@ public class BallController : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 Shoot();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                optionsPopUp.Open();
+                hitPopup.Close();
+                parPopUp.Close();
             }
             UpdateLine();
         }
