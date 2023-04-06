@@ -25,6 +25,9 @@ public class BallController : MonoBehaviour
     private Vector3 spawnPoint;
     //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
+    [SerializeField] TextMeshProUGUI level1ScoreLabel;
+    [SerializeField] TextMeshProUGUI level2ScoreLabel;
+    [SerializeField] TextMeshProUGUI level3ScoreLabel;
     [SerializeField] BasePopUp resultPopUp;
     [SerializeField] OptionsPopUp optionsPopUp;
     [SerializeField] BasePopUp hitPopup;
@@ -118,7 +121,30 @@ public class BallController : MonoBehaviour
             holeTime = 0;
         }
     }
-
+    private void putScore()
+    {
+        for (int i = 0; i < scoreArray.Length; i++)
+        {
+            if(scoreArray.Length == 1)
+            {
+                level1ScoreLabel.text = scoreArray[0].ToString();
+                level2ScoreLabel.text = "N/A";
+                level3ScoreLabel.text = "N/A";
+            }
+            else if (scoreArray.Length == 2)
+            {
+                level1ScoreLabel.text = scoreArray[0].ToString();
+                level2ScoreLabel.text = scoreArray[1].ToString();
+                level3ScoreLabel.text = "N/A";
+            }
+            else if(scoreArray.Length == 3)
+            {
+                level1ScoreLabel.text = scoreArray[0].ToString();
+                level2ScoreLabel.text = scoreArray[1].ToString();
+                level3ScoreLabel.text = scoreArray[2].ToString();
+            }
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.collider.tag == "OutOfBounds")
@@ -136,13 +162,13 @@ public class BallController : MonoBehaviour
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             Array.Resize(ref scoreArray, scoreArray.Length + 1);
-            scoreArray[scoreArray.Length - 1] = hits;
-           // scoreArray.Append(hits);
-           // Debug.Log(scoreArray[0]);
+            int score = Result(hits);
+            scoreArray[scoreArray.Length - 1] = score;
+            putScore();
             StartCoroutine(DestroyAfterSeconds(2f));
             StartCoroutine(DisableCollisionForSeconds(collision.collider, 2f));
            // Debug.Log("Hits: " + hits);
-            resultLabel.text = "Congratulations " + player + ", You got " + Result(hits);
+            resultLabel.text = "Congratulations " + player + ", You got " + score.ToString();
             resultPopUp.Open();
             hits = 0;
            // Debug.Log(level);
@@ -183,20 +209,20 @@ public class BallController : MonoBehaviour
         hitsCount.text = hits.ToString();
     }
 
-    private string Result(int hit)
+    private int Result(int hit)
     {
-        string result;
+        int result;
         if(hit == 1)
         {
-            result = "Hole in One";
+            result = -1;
         }
         else if(hit == 2)
         {
-            result = "Par";
+            result = 0;
         }
         else
         {
-            result =  "+" + (hits - 2).ToString();
+            result = hits - 2;
         }
         return result;
     }
