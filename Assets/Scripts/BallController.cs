@@ -21,30 +21,39 @@ public class BallController : MonoBehaviour
     [SerializeField] TextMeshProUGUI hitsCount;
     private int hits;
     private float holeTime;
-    //[SerializeField] private float minHoleTime;
     private Vector3 spawnPoint;
-    //private MenuManager menuManager;
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] TextMeshProUGUI level1ScoreLabel;
     [SerializeField] TextMeshProUGUI level2ScoreLabel;
     [SerializeField] TextMeshProUGUI level3ScoreLabel;
+    [SerializeField] TextMeshProUGUI finalScoreLabel1;
+    [SerializeField] TextMeshProUGUI finalScoreLabel2;
+    [SerializeField] TextMeshProUGUI finalScoreLabel3;
     [SerializeField] BasePopUp resultPopUp;
     [SerializeField] OptionsPopUp optionsPopUp;
+    [SerializeField] OptionsPopUp gameOverPopUp;
     [SerializeField] BasePopUp hitPopup;
     [SerializeField] BasePopUp parPopUp;
     [SerializeField] private BasePopUp basePopUp;
     [SerializeField] private Transform level2pos;
     [SerializeField] private Transform level3pos;
+    [SerializeField] private Transform level1pos;
+    [SerializeField] private AudioClip errorClip;
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip hitClip;
+    private AudioSource audioSource;
+
     private int level = 1;
-    private int[] scoreArray;
+    private string[] scoreArray;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
         rb.maxAngularVelocity = 1000;
         line = GetComponent<LineRenderer>();
-        scoreArray = new int[0];
-        
+        scoreArray = new string[0];
+        putScore();
     }
 
     private void Update()
@@ -66,6 +75,10 @@ public class BallController : MonoBehaviour
 
             if (Input.GetKeyUp(KeyCode.Space))
             {
+                if (power >= 0.5)
+                {
+                    audioSource.PlayOneShot(hitClip);
+                }
                 Shoot();
             }
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -99,6 +112,7 @@ public class BallController : MonoBehaviour
     }
     private void Shoot()
     {
+        
         spawnPoint = transform.position;
         rb.AddForce(Quaternion.Euler(0, angle, 0) * Vector3.forward * maxPower * power, ForceMode.Impulse);
         power = 0;
@@ -123,34 +137,37 @@ public class BallController : MonoBehaviour
     }
     private void putScore()
     {
-        for (int i = 0; i < scoreArray.Length; i++)
-        {
             if(scoreArray.Length == 1)
             {
-                level1ScoreLabel.text = scoreArray[0].ToString();
-                level2ScoreLabel.text = "N/A";
-                level3ScoreLabel.text = "N/A";
+                level1ScoreLabel.text = scoreArray[0];
+                level2ScoreLabel.text = "NA";
+                level3ScoreLabel.text = "NA";
             }
             else if (scoreArray.Length == 2)
             {
-                level1ScoreLabel.text = scoreArray[0].ToString();
-                level2ScoreLabel.text = scoreArray[1].ToString();
-                level3ScoreLabel.text = "N/A";
+                level1ScoreLabel.text = scoreArray[0];
+                level2ScoreLabel.text = scoreArray[1];
+                level3ScoreLabel.text = "NA";
             }
             else if(scoreArray.Length == 3)
             {
-                level1ScoreLabel.text = scoreArray[0].ToString();
-                level2ScoreLabel.text = scoreArray[1].ToString();
-                level3ScoreLabel.text = scoreArray[2].ToString();
+                level1ScoreLabel.text = scoreArray[0];
+                level2ScoreLabel.text = scoreArray[1];
+                level3ScoreLabel.text = scoreArray[2];
             }
-        }
+            else if(scoreArray.Length == 0)
+            {
+                level1ScoreLabel.text = "NA";
+                level2ScoreLabel.text = "NA";
+                level3ScoreLabel.text = "NA";
+            }
+        
     }
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.collider.tag == "OutOfBounds")
         {
-            //basePopUp.Open();
-            //transform.position = spawnPoint;
+            audioSource.PlayOneShot(errorClip);
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             StartCoroutine(Respawn());
@@ -158,20 +175,18 @@ public class BallController : MonoBehaviour
         if (collision.collider.tag == "Hole")
         {
             string player = PlayerPrefs.GetString("PlayerName", "Player1");
-            //if (line) { Destroy(line); }
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            audioSource.PlayOneShot(successClip);
             Array.Resize(ref scoreArray, scoreArray.Length + 1);
-            int score = Result(hits);
+            string score = Result(hits);
             scoreArray[scoreArray.Length - 1] = score;
             putScore();
             StartCoroutine(DestroyAfterSeconds(2f));
             StartCoroutine(DisableCollisionForSeconds(collision.collider, 2f));
-           // Debug.Log("Hits: " + hits);
             resultLabel.text = "Congratulations " + player + ", You got " + score.ToString();
             resultPopUp.Open();
             hits = 0;
-           // Debug.Log(level);
             level++;
             
         }
@@ -199,30 +214,49 @@ public class BallController : MonoBehaviour
         if(level == 2)
         { 
             transform.position = level2pos.position;
-            hits = 0;
         }
-        else { 
+        else if(level == 3){ 
             transform.position = level3pos.position;
+        }
+        else
+        {
+            transform.position = level1pos.position;
+        }
+        if(level == 4)
+        {
+            putNumberWhenGameOver();
+            gameOverPopUp.Open();
+            hitPopup.Close();
+            parPopUp.Close();
+            Array.Resize(ref scoreArray, 0);
+            putScore();
+            
+
         }
         line.enabled = true;
         resultPopUp.Close();
         hitsCount.text = hits.ToString();
     }
-
-    private int Result(int hit)
+    private void putNumberWhenGameOver()
     {
-        int result;
+        finalScoreLabel1.text = scoreArray[0];
+        finalScoreLabel2.text = scoreArray[1];
+        finalScoreLabel3.text = scoreArray[2];
+    }
+    private string Result(int hit)
+    {
+        string result;
         if(hit == 1)
         {
-            result = -1;
+            result = "-1";
         }
         else if(hit == 2)
         {
-            result = 0;
+            result = "0";
         }
         else
         {
-            result = hits - 2;
+            result = "+" + (hits - 2).ToString();
         }
         return result;
     }
