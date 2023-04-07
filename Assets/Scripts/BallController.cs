@@ -25,7 +25,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private float changeAngleSpeed;
     [SerializeField] private float lineLength;
     [SerializeField] Slider powerSlider;
-    [SerializeField] TextMeshProUGUI hitsCount;
+    [SerializeField] TextMeshProUGUI hitsCount; 
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] TextMeshProUGUI level1ScoreLabel;
     [SerializeField] TextMeshProUGUI level2ScoreLabel;
