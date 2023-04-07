@@ -11,17 +11,21 @@ public class BallController : MonoBehaviour
 {
     private Rigidbody rb;
     private float angle;
+    private AudioSource audioSource;
+    private int level = 1;
+    private LineRenderer line;
+    private float powerUpTime;
+    private float power;
+    private string[] scoreArray;
+    private int hits;
+    private float holeTime;
+    private Vector3 spawnPoint;
+
     [SerializeField] private float maxPower;
     [SerializeField] private float changeAngleSpeed;
     [SerializeField] private float lineLength;
     [SerializeField] Slider powerSlider;
-    private LineRenderer line;
-    private float powerUpTime;
-    private float power;
     [SerializeField] TextMeshProUGUI hitsCount;
-    private int hits;
-    private float holeTime;
-    private Vector3 spawnPoint;
     [SerializeField] TextMeshProUGUI resultLabel;
     [SerializeField] TextMeshProUGUI level1ScoreLabel;
     [SerializeField] TextMeshProUGUI level2ScoreLabel;
@@ -41,10 +45,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private AudioClip errorClip;
     [SerializeField] private AudioClip successClip;
     [SerializeField] private AudioClip hitClip;
-    private AudioSource audioSource;
-
-    private int level = 1;
-    private string[] scoreArray;
+   
 
     private void Awake()
     {
@@ -230,6 +231,7 @@ public class BallController : MonoBehaviour
             parPopUp.Close();
             Array.Resize(ref scoreArray, 0);
             putScore();
+            level = 1;
             
 
         }
