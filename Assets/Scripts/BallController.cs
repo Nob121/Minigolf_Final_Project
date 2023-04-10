@@ -45,6 +45,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private AudioClip errorClip;
     [SerializeField] private AudioClip successClip;
     [SerializeField] private AudioClip hitClip;
+    [SerializeField] private AudioClip hitClip2;
    
 
     private void Awake()
@@ -79,6 +80,10 @@ public class BallController : MonoBehaviour
                 if (power >= 0.5)
                 {
                     audioSource.PlayOneShot(hitClip);
+                }
+                else
+                {
+                    audioSource.PlayOneShot(hitClip2);
                 }
                 Shoot();
             }

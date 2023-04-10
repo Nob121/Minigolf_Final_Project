@@ -15,7 +15,7 @@ public class MenuManager : MonoBehaviour
     {
         player = playerName.text;
         PlayerPrefs.SetString("PlayerName", player);
-        SceneManager.LoadScene("Level1");
+        SceneManager.LoadScene("Level");
     }
 
 
