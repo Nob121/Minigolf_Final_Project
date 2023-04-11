@@ -202,7 +202,8 @@ public class BallController : MonoBehaviour
             resultPopUp.Open();
             hits = 0;
             level++;
-            
+            disableKey = true;
+
         }
     }
     IEnumerator Respawn()
@@ -252,6 +253,7 @@ public class BallController : MonoBehaviour
         line.enabled = true;
         resultPopUp.Close();
         hitsCount.text = hits.ToString();
+        disableKey = false;
     }
     private void putNumberWhenGameOver()
     {
