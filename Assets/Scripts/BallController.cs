@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
+ 
 
 public class BallController : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class BallController : MonoBehaviour
     private int hits;
     private float holeTime;
     private Vector3 spawnPoint;
+    private bool disableKey = false;
 
     [SerializeField] private float maxPower;
     [SerializeField] private float changeAngleSpeed;
@@ -46,6 +49,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private AudioClip successClip;
     [SerializeField] private AudioClip hitClip;
     [SerializeField] private AudioClip hitClip2;
+    
    
 
     private void Awake()
@@ -60,46 +64,49 @@ public class BallController : MonoBehaviour
 
     private void Update()
     {
-        if (rb.velocity.magnitude < 0.01f)
+        if (!disableKey)
         {
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (rb.velocity.magnitude < 0.01f)
             {
-                angle -= Time.deltaTime * changeAngleSpeed;
-            }
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                angle += Time.deltaTime * changeAngleSpeed;
-            }
-            if (Input.GetKey(KeyCode.Space))
-            {
-                PowerUp();
-            }
+                if (Input.GetKey(KeyCode.A))
+                {
+                    angle -= Time.deltaTime * changeAngleSpeed;
+                }
+                if (Input.GetKey(KeyCode.D))
+                {
+                    angle += Time.deltaTime * changeAngleSpeed;
+                }
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    PowerUp();
+                }
 
-            if (Input.GetKeyUp(KeyCode.Space))
-            {
-                if (power >= 0.5)
+                if (Input.GetKeyUp(KeyCode.Space))
                 {
-                    audioSource.PlayOneShot(hitClip);
+                    if (power >= 0.5)
+                    {
+                        audioSource.PlayOneShot(hitClip);
+                    }
+                    else
+                    {
+                        audioSource.PlayOneShot(hitClip2);
+                    }
+                    Shoot();
                 }
-                else
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    audioSource.PlayOneShot(hitClip2);
+                    optionsPopUp.Open();
+                    hitPopup.Close();
+                    parPopUp.Close();
                 }
-                Shoot();
+                UpdateLine();
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
+            else
             {
-                optionsPopUp.Open();
-                hitPopup.Close();
-                parPopUp.Close();
-            }
-            UpdateLine();
-        }
-        else
-        {
-            if (line)
-            {
-                line.enabled = false;
+                if (line)
+                {
+                    line.enabled = false;
+                }
             }
         }
     }
@@ -176,6 +183,7 @@ public class BallController : MonoBehaviour
             audioSource.PlayOneShot(errorClip);
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            disableKey = true;
             StartCoroutine(Respawn());
         }
         if (collision.collider.tag == "Hole")
@@ -202,6 +210,7 @@ public class BallController : MonoBehaviour
         basePopUp.Open();
         yield return new WaitForSeconds(2f);
         transform.position = spawnPoint;
+        disableKey = false;
         basePopUp.Close();
 
     }
